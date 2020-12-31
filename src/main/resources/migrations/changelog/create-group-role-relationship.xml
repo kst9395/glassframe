@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.2.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <changeSet id="create-group-role-relationship" author="sengtian">
+        <dropTable tableName="appgrouprole"/>
+        <createTable tableName="appgrouprole">
+            <column name="id" autoIncrement="true" type="integer">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="groupid" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="roleid" type="integer">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="appgrouprole" baseColumnNames="groupid"
+                                 constraintName="appgrouprole_group_fk"
+                                 referencedTableName="appusergroup"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="appgrouprole" baseColumnNames="roleid"
+                                 constraintName="appgrouprole_role_fk"
+                                 referencedTableName="approle"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

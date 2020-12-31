@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.2.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <changeSet id="create-user-table" author="sengtian">
+        <createTable tableName="appuser" remarks="User table, for authentication">
+            <column name="id" autoIncrement="true" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="firstname" type="varchar(150)"></column>
+            <column name="lastname" type="varchar(150)"></column>
+            <column name="username" type="varchar(25)"></column>
+            <column name="salt" type="varchar(64)"/>
+            <column name="hash" type="varchar(128)"/>
+        </createTable>
+        <addNotNullConstraint tableName="appuser" columnDataType="varchar(25)" columnName="username"/>
+        <addUniqueConstraint tableName="appuser" columnNames="username"/>
+        <addNotNullConstraint tableName="appuser" columnDataType="varchar(150)" columnName="firstname"/>
+        <addNotNullConstraint tableName="appuser" columnDataType="varchar(25)" columnName="lastname"/>
+        <addNotNullConstraint tableName="appuser" columnDataType="varchar(128)" columnName="hash"/>
+    </changeSet>
+    <changeSet id="create-user-group-table" author="sengtian">
+        <createTable tableName="appusergroup" remarks="Group table, for group level authorization">
+            <column name="id" autoIncrement="true" type="integer">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="groupname" type="varchar(50)"/>
+            <column name="description" type="varchar(200)"/>
+        </createTable>
+        <addUniqueConstraint tableName="appusergroup" columnNames="groupname"/>
+        <addNotNullConstraint tableName="appusergroup" columnDataType="varchar(200)" columnName="description"/>
+        <insert tableName="appusergroup">
+            <column name="groupname" value="Unassigned"></column>
+            <column name="description" value="Default user group upon creation"></column>
+        </insert>
+        <insert tableName="appusergroup">
+            <column name="groupname" value="Super User"></column>
+            <column name="description" value="Maximum authority"></column>
+        </insert>
+    </changeSet>
+
+    <changeSet id="create-role-table" author="sengtian">
+        <createTable tableName="approle" remarks="Role table, for general authorization">
+            <column name="id" autoIncrement="true" type="integer"><constraints primaryKey="true"/></column>
+            <column name="rolename" type="varchar(50)"/>
+            <column name="description" type="varchar(200)"/>
+        </createTable>
+        <addUniqueConstraint tableName="approle" columnNames="rolename"/>
+        <addNotNullConstraint tableName="approle" columnDataType="varchar(200)" columnName="description"/>
+    </changeSet>
+
+    <changeSet id="create-feature-table" author="sengtian">
+        <createTable tableName="appfeature" remarks="Feature table, list available feature in the system">
+            <column name="id" autoIncrement="true" type="integer"><constraints primaryKey="true"/></column>
+            <column name="featurecode" type="varchar(50)"/>
+            <column name="description" type="varchar(200)"/>
+        </createTable>
+        <addUniqueConstraint tableName="appfeature" columnNames="featurecode"/>
+        <addNotNullConstraint tableName="appfeature" columnDataType="varchar(200)" columnName="description"/>
+        <addNotNullConstraint tableName="appfeature" columnDataType="varchar(50)" columnName="featurecode"/>
+    </changeSet>
+    <changeSet id="create-feature-access-table" author="sengtian">
+        <createTable tableName="appfeatureaccess" remarks="Feature table, list available feature in the system">
+            <column name="id" autoIncrement="true" type="integer"><constraints primaryKey="true"/></column>
+            <column name="featureid" type="integer"/>
+            <column name="roleid" type="integer"/>
+        </createTable>
+        <addNotNullConstraint tableName="appfeatureaccess" columnDataType="integer" columnName="featureid"/>
+        <addNotNullConstraint tableName="appfeatureaccess" columnDataType="integer" columnName="roleid"/>
+        <addUniqueConstraint tableName="appfeatureaccess" columnNames="featureid,roleid"/>
+        <addForeignKeyConstraint baseTableName="appfeatureaccess" baseColumnNames="featureid"
+                                 constraintName="featureaccess_feature_fk"
+                                 referencedTableName="appfeature"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="appfeatureaccess" baseColumnNames="roleid"
+                                 constraintName="featureaccess_role_fk"
+                                 referencedTableName="approle"
+                                 referencedColumnNames="id"/>
+
+    </changeSet>
+
+</databaseChangeLog>

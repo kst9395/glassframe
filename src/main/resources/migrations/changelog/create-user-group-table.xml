@@ -1,0 +1,26 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.2.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <changeSet id="create-user-group-map-table" author="sengtian">
+        <createTable tableName="appusergroupmap">
+            <column type="integer" autoIncrement="true" name="id">
+                <constraints primaryKey="true"/>
+            </column>
+            <column type="integer" name="appuserid"></column>
+            <column type="integer" name="appusergroupid"></column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="appusergroupmap" baseColumnNames="appuserid"
+                                 constraintName="appusergroupmap_appuser_fk"
+                                 referencedTableName="appuser"
+                                 referencedColumnNames="id"></addForeignKeyConstraint>
+        <addForeignKeyConstraint baseTableName="appusergroupmap" baseColumnNames="appusergroupid"
+                                 constraintName="appusergroupmap_appusergroup_fk"
+                                 referencedTableName="appusergroup"
+                                 referencedColumnNames="id"></addForeignKeyConstraint>
+        <addUniqueConstraint tableName="appusergroupmap" columnNames="appuserid,appusergroupid"/>
+
+    </changeSet>
+</databaseChangeLog>
