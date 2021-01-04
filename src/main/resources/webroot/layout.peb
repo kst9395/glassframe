@@ -1,0 +1,14 @@
+<!doctype html>
+<html>
+<head>
+    <title>{%block title%} DEFAULT TITLE {%endblock%}</title>
+
+</head>
+<body>
+<div id="wrapper">
+    {%block body%}
+    DEFAULT BODY
+    {%endblock%}
+</div>
+</body>
+</html>

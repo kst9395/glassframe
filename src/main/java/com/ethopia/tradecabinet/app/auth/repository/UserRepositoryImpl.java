@@ -83,7 +83,24 @@ public class UserRepositoryImpl implements UserRepository {
                     .select(ctx);
         });
     }
-    
+
+    @Override
+    public Maybe<List<AppUser>> paginateAppUser(int page, int pageSize) {
+
+        return async(() -> {
+            final ObjectContext ctx = serverRuntime.newContext();
+            return ObjectSelect.query(AppUser.class).pageSize(pageSize).offset((page - 1) * pageSize).select(ctx);
+        });
+    }
+
+    @Override
+    public Maybe<Long> countTotalAppUsers() {
+        return async(() -> {
+            ObjectContext ctx = serverRuntime.newContext();
+            return ObjectSelect.query(AppUser.class).count().selectOne(ctx);
+        });
+    }
+
     private AppUser _retrieveAppUserByUsername(String username) {
         ObjectContext ctx = serverRuntime.newContext();
         AppUser appUser = ObjectSelect.query(AppUser.class, AppUser.USERNAME.eq(username))

@@ -19,6 +19,9 @@ public interface UserRepository {
 
     Maybe<List<AppUser>> retrieveAppUserWithoutGroup();
 
+    Maybe<List<AppUser>> paginateAppUser(int page, int pageSize);
+
+    Maybe<Long> countTotalAppUsers();
 
 
 }

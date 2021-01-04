@@ -20,12 +20,14 @@ import io.vertx.core.Handler;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
+import io.vertx.ext.web.templ.pebble.PebbleTemplateEngine;
 import io.vertx.reactivex.core.AbstractVerticle;
 import io.vertx.reactivex.core.WorkerExecutor;
 import io.vertx.reactivex.core.http.HttpServer;
 import io.vertx.reactivex.ext.web.Route;
 import io.vertx.reactivex.ext.web.Router;
 import io.vertx.reactivex.ext.web.RoutingContext;
+import io.vertx.reactivex.ext.web.common.template.TemplateEngine;
 import io.vertx.reactivex.ext.web.handler.BodyHandler;
 import io.vertx.reactivex.ext.web.handler.ResponseContentTypeHandler;
 import io.vertx.reactivex.ext.web.handler.SessionHandler;
@@ -57,6 +59,7 @@ public class StartUpVerticle extends AbstractVerticle {
     private WorkerExecutor workerExecutor;
 
     private ServerRuntime serverRuntime;
+    private TemplateEngine templateEngine;
 
     private static final Logger logger = LoggerFactory.getLogger(StartUpVerticle.class.getName());
 
@@ -101,7 +104,7 @@ public class StartUpVerticle extends AbstractVerticle {
     private Maybe<Injector> initializeModules(List<WebHandlerMetadata> metadataList) {
         return vertx.rxExecuteBlocking(promise -> {
             try {
-                injector = Guice.createInjector(new RootModule(vertx, workerExecutor, serverRuntime), new WebModule(metadataList), new CRMModule(), new SecurityModule(), new AuthModule(), new UserManagementModule());
+                injector = Guice.createInjector(new RootModule(vertx, workerExecutor, serverRuntime, templateEngine), new WebModule(metadataList), new CRMModule(), new SecurityModule(), new AuthModule(), new UserManagementModule());
                 promise.complete(injector);
             } catch (Exception e) {
                 logger.error("Failed to initialize module", e);
@@ -198,6 +201,7 @@ public class StartUpVerticle extends AbstractVerticle {
 
     @Override
     public void start() throws Exception {
+        this.templateEngine = TemplateEngine.newInstance(PebbleTemplateEngine.create(vertx.getDelegate()));
         initializeWorkerExecutor()
                 .flatMap(success ->
                         //run migration script (liquibase) if any
